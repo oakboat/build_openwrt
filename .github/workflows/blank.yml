@@ -18,32 +18,38 @@ jobs:
 
       - name: Initialization environment
         run: |
-          sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc 
+          docker rmi `docker images -q`
+          sudo rm -rf /etc/apt/sources.list.d/*
+          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*
           sudo -E apt-get -qq update
-          sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-1804)
+          sudo -E apt-get -qq install build-essential ccache ecj fastjar file g++ gawk gettext git java-propose-classpath libelf-dev libncurses5-dev libncursesw5-dev libssl-dev python python2.7-dev python3 unzip wget python3-distutils python3-setuptools rsync subversion swig time xsltproc zlib1g-dev 
           sudo -E apt-get -qq autoremove --purge
           sudo -E apt-get -qq clean
-          sudo mkdir -p /workdir
-          sudo chown $USER:$GROUPS /workdir
+          df -h
           
       - name: Clone source code
         run: |
-          df -hT $PWD
           git clone https://github.com/openwrt/openwrt
-          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
           
       - name: Load custom feeds
         run: |
           cd openwrt
-          git clone https://github.com/kenzok8/openwrt-packages.git
-        
+          echo "src-git small https://github.com/kenzok8/small" >> feeds.conf.default
+          echo "src-git small https://github.com/kenzok8/small" >> feeds.conf.default
+          cat feeds.conf.default
+          
       - name: Update feeds
         run: cd openwrt && ./scripts/feeds update -a
         
       - name: Install feeds
         run: cd openwrt && ./scripts/feeds install -a
         
-      # Runs a set of commands using the runners shell
+      - name: Start SSH via tmate
+        uses: P3TERX/ssh2actions@main
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          
       - name: Run a multi-line script
         run: |
           echo Add other actions to build,
