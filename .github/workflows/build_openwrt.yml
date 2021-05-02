@@ -33,7 +33,7 @@ jobs:
           
       - name: Load custom feeds
         run: |
-          echo $(cat custom_feeds) >> ./openwrt/feeds.conf.default
+          cat custom_feeds >> ./openwrt/feeds.conf.default
           cat ./openwrt/feeds.conf.default
           
       - name: Update feeds
