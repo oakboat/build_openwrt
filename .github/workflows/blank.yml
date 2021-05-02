@@ -21,10 +21,10 @@ jobs:
           docker rmi `docker images -q`
           sudo rm -rf /etc/apt/sources.list.d/*
           sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*
-          sudo -E apt-get -qq update
-          sudo -E apt-get -qq install build-essential ccache ecj fastjar file g++ gawk gettext git java-propose-classpath libelf-dev libncurses5-dev libncursesw5-dev libssl-dev python python2.7-dev python3 unzip wget python3-distutils python3-setuptools rsync subversion swig time xsltproc zlib1g-dev 
-          sudo -E apt-get -qq autoremove --purge
-          sudo -E apt-get -qq clean
+          sudo -E apt-get -y update
+          sudo -E apt-get -y install build-essential ccache ecj fastjar file g++ gawk gettext git java-propose-classpath libelf-dev libncurses5-dev libncursesw5-dev libssl-dev python python2.7-dev python3 unzip wget python3-distutils python3-setuptools rsync subversion swig time xsltproc zlib1g-dev 
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get -y clean
           df -h
           
       - name: Clone source code
@@ -34,7 +34,7 @@ jobs:
       - name: Load custom feeds
         run: |
           cd openwrt
-          echo "src-git small https://github.com/kenzok8/small" >> feeds.conf.default
+          echo " src-git kenzo https://github.com/kenzok8/openwrt-packages" >> feeds.conf.default
           echo "src-git small https://github.com/kenzok8/small" >> feeds.conf.default
           cat feeds.conf.default
           
