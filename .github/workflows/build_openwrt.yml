@@ -18,9 +18,7 @@ jobs:
 
       - name: Initialization environment
         run: |
-          docker rmi `docker images -q`
           sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
-          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*
           sudo -E apt-get -y update
           sudo -E apt-get -y install $(cat depends)
           sudo -E apt-get -y autoremove --purge
@@ -33,8 +31,10 @@ jobs:
           
       - name: Load custom feeds
         run: |
-          cat custom_feeds >> ./openwrt/feeds.conf.default
-          cat ./openwrt/feeds.conf.default
+          cd openwrt
+          sh ../custom.sh
+          cat ../custom_feeds >> feeds.conf.default
+          cat feeds.conf.default
           
       - name: Update feeds
         run: cd openwrt && ./scripts/feeds update -a
