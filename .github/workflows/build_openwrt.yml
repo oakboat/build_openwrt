@@ -1,11 +1,6 @@
 name: Build OpenWrt
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
   
@@ -31,16 +26,16 @@ jobs:
           
       - name: Load custom feeds
         run: |
-          cd openwrt
+          cd lede
           sh ../custom.sh
           cat ../custom_feeds >> feeds.conf.default
           cat feeds.conf.default
           
       - name: Update feeds
-        run: cd openwrt && ./scripts/feeds update -a
+        run: cd lede && ./scripts/feeds update -a
         
       - name: Install feeds
-        run: cd openwrt && ./scripts/feeds install -a
+        run: cd lede && ./scripts/feeds install -a
         
       - name: Make menuconfig
         uses: P3TERX/ssh2actions@main
@@ -49,12 +44,12 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           
       - name: Compile the firmware
-        run: cd openwrt && make V=s
+        run: cd lede && make V=s
         
       - name: Prepare artifact
         run: | 
           mkdir -p ./artifact/firmware
-          cp ./openwrt/bin/targets/*/*/*.bin ./artifact/firmware/
+          cp ./lede/bin/targets/*/*/*.bin ./artifact/firmware/
           
       - name: Upload firmware
         run: |
