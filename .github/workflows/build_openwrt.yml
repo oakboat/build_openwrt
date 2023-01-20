@@ -51,8 +51,8 @@ jobs:
           mkdir -p ./artifact/firmware
           cp ./lede/bin/targets/*/*/*.* ./artifact/firmware/
           
-      - name: Upload firmware
-        run: |
-          curl -sL https://git.io/cowtransfer | sh 
-          ./cowtransfer-uploader ./artifact/firmware
+      - uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: ./artifact/firmware/
        
