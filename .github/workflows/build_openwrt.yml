@@ -44,7 +44,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           
       - name: Compile the firmware
-        run: cd lede && make V=s
+        run: cd lede && make download -j8 && make V=s -j1
         
       - name: Prepare artifact
         run: | 
