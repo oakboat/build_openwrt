@@ -1,4 +1,4 @@
-name: Build OpenWrt
+name: Build Lede
 
 on:
   # Allows you to run this workflow manually from the Actions tab
@@ -10,26 +10,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
+        
+      - name: Space cleanup
+        run: |
+          docker rmi `docker images -q`
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
+          sudo -E apt -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
+          sudo -E apt -y autoremove --purge
+          sudo -E apt clean
+          df -h
+          
       - name: Initialization environment
         run: |
-          sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
-          sudo -E apt-get -y update
-          sudo -E apt-get -y install $(cat depends)
-          sudo -E apt-get -y autoremove --purge
-          sudo -E apt-get -y clean
-          df -h
+          sudo -E apt -y update
+          sudo -E apt full-upgrade -y
+          sudo -E apt -y install $(cat depends)
           
       - name: Clone source code
         run: |
           git clone -b 20221001 https://github.com/coolsnowwolf/lede
-          
-      - name: Load custom feeds
-        run: |
-          cd lede
-          sh ../custom.sh
-          cat ../custom_feeds >> feeds.conf.default
-          cat feeds.conf.default
           
       - name: Update feeds
         run: cd lede && ./scripts/feeds update -a
@@ -39,9 +38,6 @@ jobs:
         
       - name: Make menuconfig
         uses: P3TERX/ssh2actions@main
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           
       - name: Compile the firmware
         run: cd lede && make download -j8 && make V=s -j1
